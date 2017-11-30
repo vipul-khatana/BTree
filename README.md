@@ -12,7 +12,7 @@ In the second method, we search for m in the similar way. But if m is equal to k
 Now in the first case the time complexity for search and delete operations would be O(log(n)), while in the second case the time complexity would be O(log(n) + log(k)). Consider a degeneratecase where all the keys are same, or most of the keys are same. In that case we might have a linked list instead of a tree, which might end up using a lot of space. We give space a more preference and hence employ the first method. 
  
 ## How to run
-Compile using `javac BTree.java`
+Compile all the files using `javac *.java`
 
 Run using `java BTree.java`
 

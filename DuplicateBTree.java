@@ -1,13 +1,5 @@
-// package col106.a3;
-
-
+// BTree with duplicate keys ADT 
 import java.util.List;
-
-// class IllegalKeyException extends Exception {
-//     public IllegalKeyException() {
-//         super("IllegalKeyException");
-//     }
-// }
 
 public interface DuplicateBTree<Key extends Comparable<Key>, Value> {
     public boolean isEmpty();  /* Returns true if the tree is empty. */

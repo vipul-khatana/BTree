@@ -57,9 +57,9 @@ class BTreeNode <Key extends Comparable<Key>, Value>{
 
     //find appropriate position of k for insertion, search. 
     public int find_pos(key k){ 
-        int c2 = -1;
+        int c2 = -1;                                                            
         for(int i =0; i<= pos;i++){
-            int a = k.compareTo(this.keyAt(i));
+            int a = k.compareTo((Key)this.keyAt(i));
             if(a>0){continue;}
             else {
                 c2 = i;
@@ -97,8 +97,6 @@ class BTreeNode <Key extends Comparable<Key>, Value>{
         } 
     }
     
-    
-
     public void addElement(Key k, Value v){
         Pair <Key,Value> temp = new Pair(k,v);
         int c2= this.find_pos(k);
@@ -119,14 +117,11 @@ class BTreeNode <Key extends Comparable<Key>, Value>{
     }
 
     public void addChild(BTreeNode n){ // set current as parent of n, add n to children_set
-        if(n == null){
-            return;
-        }
+        if(n == null){return;}
         n.setParent(this);
         int c2= this.find_pos(n.keyAt(n.pos));//finding the index in the children set
         children_set[c2] = n;
-        num_of_children++;
-        
+        num_of_children++; 
     }
 
     public BTreeNode RemoveElements(int a,int b){ //Remove elements and children of a node from index a to b
@@ -205,7 +200,6 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
         BTree <Key,Value> temp = new BTree(root.arr.length);
         temp.root = root.children_set[n];
         return temp;
-
     }
     
     public int subtree_size(BTreeNode n){ // Size of tree with n as root
@@ -225,9 +219,8 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
     public int height_of(BTreeNode n){ // Height of tree with root at n 
         int count=0;
         count+= 1;
-        if(n.children_set[0] != null){
+        if(n.children_set[0] != null)
             count+= height_of(n.children_set[0]);
-        }
         return count;
     }
 
@@ -236,19 +229,19 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
         return height_of(root);
     }
 
-    public List<Value> search_in(BTreeNode n, Key key){ 
+    public List<Value> search_in(BTreeNode n, Key key){ // Search key in a tree with n as root
         List<Value> temp = new Vector<Value>();
+        //Search in n
         for(int i=0;i<=n.pos;i++){
-                int a = key.compareTo((Key)n.arr[i].getKey());
+                int a = key.compareTo((Key)n.keyAt(i));
                 if(a<0){break;}
-                if(a==0){
-                    temp.add((Value)n.arr[i].getValue());
-                }
+                if(a==0)
+                    temp.add((Value)n.valueAt(i));
             }
+        // Recursively search in all children of n
         for(int i=0;i<n.children_set.length;i++){
-            if(n.children_set[i] != null){
+            if(n.children_set[i] != null)
                 temp.addAll(search_in(n.children_set[i],key));
-            }
         }
         return temp;
     }
@@ -258,11 +251,13 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
         return search_in(root,key);
     }
 
-    public BTreeNode fixOverflow(BTreeNode n){
+    public BTreeNode fixOverflow(BTreeNode n){ // Fix overflow
         BTreeNode <Key,Value> new_root = new BTreeNode(n.arr.length);
         Pair <Key,Value> temp1 ;
         int c = (n.pos + 1)/2;
         temp1 = n.arr[c];
+        
+        // Overflow at root
         if(n.parent == null){
             n.parent = new BTreeNode(n.arr.length);
             n.parent.addElement(temp1.getKey(),temp1.getValue());
@@ -272,6 +267,7 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
             n.parent.addChild(n);
             new_root = n.parent;
         }
+        //Overflow at any other node
         else{
             n.parent.addElement(temp1.getKey(),temp1.getValue());
             n.parent.rightShift(n.indexAsChild());
@@ -286,60 +282,48 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
 
     public BTreeNode insert_item(BTreeNode n, Key key, Value val) {
         BTreeNode <Key,Value> new_root = new BTreeNode(n.arr.length);
+        // n not a leaf
         if(n.num_of_children != 0){
-            int c1=-1;
-            for(int i =0; i<= n.pos;i++){
-                int a = key.compareTo((Key)n.arr[i].getKey());
-                if(a>0){continue;}
-                else {
-                    c1 = i;
-                    break;
-                }
-            }
-            if(c1==-1){c1=(this.root.pos + 1);}
+            int c1= n.find_pos(k);
             new_root = insert_item(n.children_set[c1],key,val);
         }
-        else {
+        // n is a leaf
+        else { 
             n.addElement(key,val);
             new_root = root;
-            if(n.arr.length == (n.pos + 1)) {
+            if(n.arr.length == (n.pos + 1)) 
                 new_root = this.fixOverflow(n);
-            }
         }
         return new_root;
     }
     
     @Override
     public void insert(Key key, Value val) {
-        Pair <Key,Value> temp = new Pair(key,val); //Creating an object of Pair with key,val  
-        if(this.root.pos == -1){
-                (this.root.pos)+= 1;
-                this.root.arr[this.root.pos] = temp;
+        Pair <Key,Value> temp = new Pair(key,val);
+        if(root.pos == -1){
+                (root.pos)+= 1;
+                root.arr[root.pos] = temp;
             }
-        else{
+        else
             root = insert_item(root, key, val);
-        }
     }
     
     @Override
-    public String toString(){
+    public String toString(){ // Prints the tree using in order traversal
         return print(root);
     }
 
-    public String print(BTreeNode n){
+    public String print(BTreeNode n){ // In order traversal of the tree
         String temp = "[";
         for(int i=0;i<=n.pos;i++){
-            if(i !=0){
+            if(i !=0)
                 temp = temp + ",";
-            }
-            if(n.children_set[i] != null){
+            if(n.children_set[i] != null)
                 temp = temp + (print(n.children_set[i])) + ",";
-            }
-            temp = temp + (Key)n.arr[i].getKey().toString();
+            temp = temp + (Key)n.keyAt(i).toString();
         }
-        if(n.children_set[n.pos + 1] != null){
+        if(n.children_set[n.pos + 1] != null)
             temp = temp + "," + print(n.children_set[n.pos + 1]);
-        }
         temp = temp + "]";
         return temp;
     }
@@ -347,7 +331,6 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
     //testing the function 
     public static void main(String[] args) {
         BTree <Integer,String> test_alpha = new BTree(4);
-
         test_alpha.insert(4,"4");
         test_alpha.insert(5,"5");
         test_alpha.insert(10,"10");
@@ -361,7 +344,6 @@ public class BTree <Key extends Comparable<Key>,Value> implements DuplicateBTree
         test_alpha.insert(84,"84");
         test_alpha.insert(44,"4");
         test_alpha.insert(45,"4");
-
         System.out.println( test_alpha.toString());
     }
 }

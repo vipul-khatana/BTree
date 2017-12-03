@@ -1,4 +1,9 @@
-// package col106.a3;
+/*
+Created Thu Sep 10 2015
+
+@author: vipulkhatana
+*/
+
 
 import java.util.Scanner;
 
